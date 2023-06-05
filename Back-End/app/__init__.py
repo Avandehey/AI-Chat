@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 app = Flask(__name__) #creates instance of FLask app, name is the resource passed in
-app.comfig.from_object(Config) #loads config for flask from Config obj
+app.config.from_object(Config) #loads config for flask from Config obj
 db = SQLAlchemy(app) #creates instance of SQLAlchemy, which allows me to work with my database
 migrate = Migrate(app, db) #creates instance of migrate which gives support for database operations
 

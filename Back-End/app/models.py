@@ -8,20 +8,16 @@ from app import db
 
 # User class, the user_id will automatically be generated as a uuid key, the password will automatically be hashed
 class User(db.Model):
-    id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(15), unique=True)
     email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(25), nullable=False)
-    token = db.Column(db.String(250), unique=True, default=token_urlsafe(32))
+    password = db.Column(db.String(250), nullable=False)
+    token = db.Column(db.String(250), unique=True, default=lambda: token_urlsafe(32))
 
     conversations = db.relationship('Conversation', backref='user', lazy=True)
 
     def __repr__(self):
         return f'User: {self.username}'
-    
-    def __init__(self, *args, **kwargs):
-        super(User, self).__init__(*args, **kwargs)
-        self.password = self.hash_password(self.password)
     
     def commit(self):
         db.session.add(self)
@@ -35,9 +31,9 @@ class User(db.Model):
 
 # a conversation class that stores the messages connected to each conversation
 class Conversation(db.Model):
-    id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
-    name = db.Column(db.string(50),default=str('Random Conversation'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = db.Column(db.String(50),default=str('Random Conversation'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     messages = db.relationship('Message', backref='conversation', lazy=True)
@@ -51,8 +47,8 @@ class Conversation(db.Model):
 
 # each message is saved as a instance of the message class with a relationship to the conversation it happened in
 class Message(db.Model):
-    id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
-    conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'))
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    conversation_id = db.Column(db.String, db.ForeignKey('conversation.id'))
     body = db.Column(db.String(1000))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     sender = db.Column(db.String(10))
