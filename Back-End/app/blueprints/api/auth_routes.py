@@ -40,7 +40,7 @@ def verify_user():
     # send the user token if user
     if user:
         if user.check_password(password):
-            return jsonify({'user_token': user.token})
+            return jsonify([{'user_token': user.token}])
         # error handling for incorrect password
         else:
             return jsonify({'message': 'invalid password.'}), 401 # 401 means unauthorized user
