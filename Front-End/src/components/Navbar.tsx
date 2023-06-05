@@ -9,6 +9,7 @@ interface CustomLinkProps {
 
 const CustomLink: React.FC<CustomLinkProps> = ({ to, children, ...props }) => {
   const resolvedPath = useResolvedPath(to);
+  // used to determine if the site url matches the passed in url
   const isActive = useMatch({ path: resolvedPath.pathname, end: true });
 
   return (
@@ -26,7 +27,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="nav">
       <Link to="/" className="site-title">
-        Auto Project
+        AI Chat Hub
       </Link>
       <ul>
         <CustomLink to="/">Home</CustomLink>
