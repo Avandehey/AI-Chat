@@ -4,6 +4,7 @@ import Register from './pages/Register'
 import LoginPage from './pages/Signin'
 import Navbar from './components/Navbar'
 import Logout from "./pages/Logout"
+import HouseChat from "./pages/HouseChat"
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
       <div className="container">
         <Routes>
           <Route path="/" element={ <Home /> } />
+          <Route path="/housechat" element={ <HouseChat /> } />
           <Route path="/signin" element={ <LoginPage /> } />
           <Route path="/register" element={ <Register /> } />
           <Route path="/logout" element={ <Logout /> } />

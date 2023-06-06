@@ -1,5 +1,6 @@
 *{
     box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
   }
   
   body {
@@ -51,4 +52,104 @@
   }
   
   
+  .chat-window {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: rgb(145, 143, 143);
+    border: 3px black solid;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
   
+  .message {
+    display: inline-block;
+    background-color: white;
+    border-radius: 20px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    position: relative;
+    border: 2px black solid;
+    box-shadow: 0 15px 8px rgba(0, 0, 0, 0.6);
+  }
+  
+  .message::before {
+    content: "";
+    position: absolute;
+    bottom: -6px ;
+    border: 4px solid transparent;
+  }
+  
+  .message.user::before {
+    left: -6px;
+    transform: rotate(-45deg);
+  }
+  
+  .message.ai::before {
+    right: -6px;
+    transform: rotate(-135deg);
+  }
+  
+  .message.user::before,
+  .message.ai::before {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid black;
+  }
+  
+  .message.ai {
+    background: linear-gradient(to bottom, rgb(128, 214, 128), rgb(61, 160, 61), rgb(168, 218, 168));
+    align-self: flex-start;
+    margin-right: 30%;
+  }
+  
+  .message.user {
+    background: linear-gradient(to bottom, rgb(114, 166, 230), rgb(49, 112, 201), rgb(56, 86, 154));
+    align-self: flex-end;
+    margin-left: 30%;
+  }
+  
+  .message-body {
+    font-size: 14px;
+  }
+  
+
+  .window-box {
+    height: calc(80% - 60px);
+    width: 900px;
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 80px;
+  }
+  
+  .input-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .input-bar input {
+    flex: 1;
+    height: 40px;
+    padding: 5px;
+    border: 2px solid black;
+    border-radius: 5px;
+  }
+  
+  .input-bar button {
+    height: 40px;
+    padding: 5px 10px;
+    background-color: rgb(49, 112, 201);
+    color: white;
+    border: 2px black solid;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .input-bar button:hover {
+    background-color: rgb(96, 194, 96);
+  }
