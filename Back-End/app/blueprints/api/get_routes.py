@@ -17,7 +17,8 @@ def get_conversations(user):
             result.append({
                 'id': conversation.id,
                 'name': conversation.name,
-                'timestamp': conversation.timestamp
+                'timestamp': conversation.timestamp,
+                'url': conversation.url
             })
         return jsonify(result), 200
     except Exception as e:

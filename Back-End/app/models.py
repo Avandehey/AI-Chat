@@ -35,6 +35,7 @@ class Conversation(db.Model):
     name = db.Column(db.String(50),default=str('Random Conversation'))
     user_id = db.Column(db.String, db.ForeignKey('user.id'))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    url = db.Column(db.String, nullable=False)
 
     messages = db.relationship('Message', backref='conversation', lazy=True)
 

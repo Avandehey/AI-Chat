@@ -10,7 +10,7 @@ from app.blueprints.api.helpers import token_required
 def create_conversation(user):
     try:
         content = request.json
-        conversation = Conversation(name=content.get('name'), user_id=user.id)
+        conversation = Conversation(name=content.get('name'),url=content.get('url'), user_id=user.id)
         conversation.commit()
         return jsonify({'message':'Conversation created', 'name': conversation.name, 'conversation_id': conversation.id}), 200
     except:
