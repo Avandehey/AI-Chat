@@ -12,7 +12,7 @@ def create_conversation(user):
         content = request.json
         conversation = Conversation(name=content.get('name'), user_id=user.id)
         conversation.commit()
-        return jsonify({'message':'Conversation created', 'name': conversation.name, 'conversation_id': conversation.id})
+        return jsonify({'message':'Conversation created', 'name': conversation.name, 'conversation_id': conversation.id}), 200
     except:
         return jsonify({'message': 'invalid form, please try again'}), 400
 
@@ -32,6 +32,6 @@ def create_message(user):
         message = Message(conversation_id=conversation_id, body=body, sender=sender)
         # Commit the message to the database
         message.commit()
-        return jsonify({'message': 'Message created', 'body': message.body})
+        return jsonify({'message': 'Message created', 'body': message.body}), 200
     except:
         return jsonify({'message': 'invalid form, please try again'}), 400

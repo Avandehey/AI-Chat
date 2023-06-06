@@ -14,16 +14,16 @@ def register_user():
     # error handling for username
     user = User.query.filter_by(username=username).first()
     if user:
-        return jsonify({'message':'that Username is taken, please use a different Username'})
+        return jsonify({'message':'that Username is taken, please use a different Username'}), 409
     # error handling for email
     user = User.query.filter_by(email=email).first()
     if user:
-        return jsonify({'message':'that email is taken, please use a different Email'})
+        return jsonify({'message':'that email is taken, please use a different Email'}), 409
     # create a new instance of User
     user = User(email=email, username=username)
     user.password = user.hash_password(password)
     user.commit()
-    return jsonify({'message': f'{user.username} is now a valid user'})
+    return jsonify({'message': f'{user.username} is now a valid user'}), 200
 
 # verify a user
 @bp.post('/verify-user')
@@ -40,7 +40,7 @@ def verify_user():
     # send the user token if user
     if user:
         if user.check_password(password):
-            return jsonify([{'user_token': user.token}])
+            return jsonify([{'user_token': user.token}]), 200
         # error handling for incorrect password
         else:
             return jsonify({'message': 'invalid password.'}), 401 # 401 means unauthorized user
