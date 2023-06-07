@@ -31,9 +31,11 @@ const Navbar: React.FC = () => {
       </Link>
       <ul>
         <CustomLink to="/">Home</CustomLink>
-        <CustomLink to="/housechat">House Chat</CustomLink>
         {user.token || localStorage.getItem('token') ? (
-          <CustomLink to="/logout">Logout</CustomLink>
+          <>
+            <CustomLink to="/userpage">User Page</CustomLink>
+            <CustomLink to="/logout">Logout</CustomLink>
+          </>
         ) : (
           <>
             <CustomLink to="/register">Register</CustomLink>

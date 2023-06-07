@@ -5,6 +5,7 @@ import LoginPage from './pages/auth_pages/Signin'
 import Navbar from './components/Navbar'
 import Logout from "./pages/auth_pages/Logout"
 import HouseChat from "./pages/chat_pages/HouseChat"
+import UserPage from "./pages/UserPage"
 
 function App() {
 
@@ -14,7 +15,8 @@ function App() {
       <div className="container">
         <Routes>
           <Route path="/" element={ <Home /> } />
-          <Route path="/housechat" element={ <HouseChat /> } />
+          <Route path="/userpage" element={ <UserPage />} />
+          <Route path="/housechat/:conversation_id" element={ <HouseChat /> } />
           <Route path="/signin" element={ <LoginPage /> } />
           <Route path="/register" element={ <Register /> } />
           <Route path="/logout" element={ <Logout /> } />

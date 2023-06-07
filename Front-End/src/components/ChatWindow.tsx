@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Message {
   body: string;
@@ -7,28 +7,41 @@ interface Message {
 }
 
 interface ChatWindowProps {
-  messages: Message[];
+  conversationId: string;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
 
-  const sortedMessages = [...messages].sort((a, b) => {
-    return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
-  });
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const res = await fetch(`/api/messages/${conversationId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+      setMessages(data);
+    };
+
+    fetchMessages();
+  }, [conversationId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleSendClick = () => {
-    // Implement your logic to send the message here
-    // For now, let's just log the input value
     console.log('Sending message:', inputValue);
-
-    // Clear the input field after sending the message
     setInputValue('');
   };
+
+  const sortedMessages = [...messages].sort((a, b) => {
+    return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+  });
 
   return (
     <div className="window-box">
