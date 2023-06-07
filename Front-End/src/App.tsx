@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router-dom"
 import Home from "./pages/Home"
-import Register from './pages/Register'
-import LoginPage from './pages/Signin'
+import Register from './pages/auth_pages/Register'
+import LoginPage from './pages/auth_pages/Signin'
 import Navbar from './components/Navbar'
-import Logout from "./pages/Logout"
-import HouseChat from "./pages/HouseChat"
+import Logout from "./pages/auth_pages/Logout"
+import HouseChat from "./pages/chat_pages/HouseChat"
 
 function App() {
 
