@@ -16,7 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={ <Home /> } />
           <Route path="/userpage" element={ <UserPage />} />
-          <Route path="/housechat/:conversation_id" element={ <HouseChat /> } />
+          <Route path="/housechat/" element={ <HouseChat /> } />
           <Route path="/signin" element={ <LoginPage /> } />
           <Route path="/register" element={ <Register /> } />
           <Route path="/logout" element={ <Logout /> } />

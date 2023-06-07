@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../contexts/UserProvider';
 
 interface Message {
   body: string;
@@ -11,31 +12,63 @@ interface ChatWindowProps {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
+  const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const base_api_url = import.meta.env.VITE_APP_BASE_API;
 
   useEffect(() => {
     const fetchMessages = async () => {
-      const res = await fetch(`/api/messages/${conversationId}`, {
+      const res = await fetch(`${base_api_url}/messages/${conversationId}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'x-access-token': `bearer ${user.token}`
+        }
       });
 
-      const data = await res.json();
-      setMessages(data);
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(data);
+      }
     };
 
     fetchMessages();
-  }, [conversationId]);
+  }, [base_api_url, conversationId, user.token]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const handleSendClick = () => {
-    console.log('Sending message:', inputValue);
+  const handleSendClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+
+    if (inputValue.trim() === '') {
+      return;
+    }
+
+    const res = await fetch(`${base_api_url}/message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': `bearer ${user.token}`
+      },
+      body: JSON.stringify({
+        conversation_id: `${conversationId}`,
+        body: inputValue,
+        sender: 'user'
+      })
+    });
+
+    if (res.ok) {
+      const newMessage = {
+        body: inputValue,
+        sender: 'user',
+        timestamp: new Date().toISOString()
+      };
+
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+    }
+
     setInputValue('');
   };
 
@@ -66,3 +99,4 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
 };
 
 export default ChatWindow;
+

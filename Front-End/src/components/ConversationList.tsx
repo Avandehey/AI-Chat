@@ -34,7 +34,7 @@ const ConversationList: React.FC = () => {
   }, []);
 
   const handleButtonClick = (url: string, id: string) => {
-    navigate(`${url}/${id}`);
+    navigate(`${url}?conversation_id=${id}`);
   };
 
   // Sort conversations by timestamp in ascending order
