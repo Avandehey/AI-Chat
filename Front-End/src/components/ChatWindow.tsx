@@ -16,24 +16,51 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const base_api_url = import.meta.env.VITE_APP_BASE_API;
+  const aiApiUrl = 'https://api.openai.com/v1/chat/completions';
+  const base_ai_key = import.meta.env.OPEN_AI_API_KEY
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      const res = await fetch(`${base_api_url}/messages/${conversationId}`, {
-        method: 'GET',
-        headers: {
-          'x-access-token': `bearer ${user.token}`
-        }
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setMessages(data);
-      }
-    };
-
     fetchMessages();
-  }, [base_api_url, conversationId, user.token]);
+  }, []);
+
+  const fetchMessages = async () => {
+    const res = await fetch(`${base_api_url}/messages/${conversationId}`, {
+      method: 'GET',
+      headers: {
+        'x-access-token': `bearer ${user.token}`,
+      },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setMessages(data);
+    }
+  };
+
+  const sendMessage = async (message: string, sender: string) => {
+    const res = await fetch(`${base_api_url}/message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': `bearer ${user.token}`,
+      },
+      body: JSON.stringify({
+        conversation_id: conversationId,
+        body: message,
+        sender: sender,
+      }),
+    });
+
+    if (res.ok) {
+      const newMessage = {
+        body: message,
+        sender: sender,
+        timestamp: new Date().toISOString(),
+      };
+
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -46,27 +73,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
       return;
     }
 
-    const res = await fetch(`${base_api_url}/message`, {
+    const aiRes = await fetch(aiApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': `bearer ${user.token}`
+        'Authorization': `Bearer ${base_ai_key}`,
       },
       body: JSON.stringify({
-        conversation_id: `${conversationId}`,
-        body: inputValue,
-        sender: 'user'
-      })
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'user', content: inputValue },
+          { role: 'assistant', content: '' },
+        ],
+        temperature: 0,
+      }),
     });
 
-    if (res.ok) {
-      const newMessage = {
-        body: inputValue,
-        sender: 'user',
-        timestamp: new Date().toISOString()
-      };
+    if (aiRes.ok) {
+      const aiData = await aiRes.json();
+      const aiResponse = aiData.choices[0].message.content;
 
-      setMessages(prevMessages => [...prevMessages, newMessage]);
+      // Save user message
+      await sendMessage(inputValue, 'user');
+
+      // Save AI response
+      await sendMessage(aiResponse, 'ai');
     }
 
     setInputValue('');
@@ -80,7 +111,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
     <div className="window-box">
       <div className="chat-window">
         {sortedMessages.map((message, index) => (
-          <div key={index} className={`message ${message.sender === 'ai' ? 'ai' : 'user'}`}>
+          <div
+            key={index}
+            className={`message ${message.sender === 'ai' ? 'ai' : 'user'}`}
+          >
             <div className="message-body">{message.body}</div>
           </div>
         ))}
@@ -99,4 +133,3 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
 };
 
 export default ChatWindow;
-
