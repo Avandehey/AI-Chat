@@ -18,6 +18,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   const base_api_url = import.meta.env.VITE_APP_BASE_API;
   const aiApiUrl = 'https://api.openai.com/v1/chat/completions';
   const base_ai_key = import.meta.env.OPEN_AI_API_KEY
+  console.log(conversationId , user.token)
 
   useEffect(() => {
     (async ()=> await fetchMessages())()
@@ -29,7 +30,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': `bearer ${user.token}`,
+        'x-access-token': `Bearer ${user.token || localStorage.getItem('token')}`,
       },
     });
 

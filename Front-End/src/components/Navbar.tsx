@@ -22,8 +22,11 @@ const CustomLink: React.FC<CustomLinkProps> = ({ to, children, ...props }) => {
 };
 
 const Navbar: React.FC = () => {
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
 
+  if (!user.token && localStorage.getItem('token') ) { 
+    setUser({'token': localStorage.getItem('token') || '' , username: localStorage.getItem('username') || '', loggedIn: true})
+  }
   return (
     <nav className="nav">
       <Link to="/" className="site-title">
