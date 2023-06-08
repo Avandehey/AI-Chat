@@ -28,6 +28,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
     const res = await fetch(`${base_api_url}/messages/${conversationId}`, {
       method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
         'x-access-token': `bearer ${user.token}`,
       },
     });
