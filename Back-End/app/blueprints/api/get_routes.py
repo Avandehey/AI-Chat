@@ -25,9 +25,10 @@ def get_conversations(user):
         return jsonify({'message': 'Failed to retrieve conversations', 'error': str(e)}), 500
 
 # route to get all messages in a conversation
-@bp.get('/messages/<conversation_id>')
+@bp.get('/messages/:<conversation_id>')
 @token_required
 def get_messages(user, conversation_id):
+    print("in git messages")
     try:
         conversation = Conversation.query.filter_by(id=conversation_id, user_id=user.id).first()
         if not conversation:

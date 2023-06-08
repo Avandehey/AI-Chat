@@ -20,10 +20,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   const base_ai_key = import.meta.env.OPEN_AI_API_KEY
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
+    (async ()=> await fetchMessages())()
+  }, [conversationId]);
 
   const fetchMessages = async () => {
+    console.log(conversationId, "fetch messages")
     const res = await fetch(`${base_api_url}/messages/${conversationId}`, {
       method: 'GET',
       headers: {
@@ -34,6 +35,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
     if (res.ok) {
       const data = await res.json();
       setMessages(data);
+    } else {
+      console.log(res)
     }
   };
 

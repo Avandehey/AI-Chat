@@ -34,6 +34,7 @@ const ConversationList: React.FC = () => {
   }, []);
 
   const handleButtonClick = (url: string, id: string) => {
+    console.log(id)
     navigate(`${url}?conversation_id=${id}`);
   };
 
