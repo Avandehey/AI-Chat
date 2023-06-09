@@ -17,28 +17,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   const [inputValue, setInputValue] = useState('');
   const base_api_url = import.meta.env.VITE_APP_BASE_API;
   const aiApiUrl = 'https://api.openai.com/v1/chat/completions';
-  const base_ai_key = import.meta.env.OPEN_AI_API_KEY
-  console.log(conversationId , user.token)
 
   useEffect(() => {
-    (async ()=> await fetchMessages())()
+    fetchMessages();
   }, [conversationId]);
 
   const fetchMessages = async () => {
-    console.log(conversationId, "fetch messages")
     const res = await fetch(`${base_api_url}/messages/${conversationId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': `Bearer ${user.token || localStorage.getItem('token')}`,
+        'x-access-token': `Bearer ${user.token || JSON.parse(localStorage.getItem('token') || '')}`,
       },
     });
 
     if (res.ok) {
       const data = await res.json();
       setMessages(data);
-    } else {
-      console.log(res)
     }
   };
 
@@ -47,7 +42,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': `bearer ${user.token}`,
+        'x-access-token': `bearer ${user.token || JSON.parse(localStorage.getItem('token') || '')}`,
       },
       body: JSON.stringify({
         conversation_id: conversationId,
@@ -78,19 +73,32 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
       return;
     }
 
+    const lastThreeMessages = messages
+      .slice(-3)
+      .map((message) => ({
+        role: 'user',
+        content: message.body || '', // Set content to an empty string if body is undefined or null
+      }));
+
     const aiRes = await fetch(aiApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${base_ai_key}`,
+        Authorization: `Bearer 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`,
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
         messages: [
+          {
+            role: 'system',
+            content:
+              "you are House from the show House MD, known for your wit and sarcasm. You are consulting a fellow doctor about a challenging medical case. Keep your replies short",
+          },
+          ...lastThreeMessages,
           { role: 'user', content: inputValue },
           { role: 'assistant', content: '' },
         ],
-        temperature: 0,
+        temperature: 1,
       }),
     });
 

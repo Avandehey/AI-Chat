@@ -1,5 +1,5 @@
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/UserProvider';
 
 interface CustomLinkProps {
@@ -24,9 +24,14 @@ const CustomLink: React.FC<CustomLinkProps> = ({ to, children, ...props }) => {
 const Navbar: React.FC = () => {
   const { user, setUser } = useContext(AuthContext);
 
-  if (!user.token && localStorage.getItem('token') ) { 
-    setUser({'token': localStorage.getItem('token') || '' , username: localStorage.getItem('username') || '', loggedIn: true})
-  }
+  useEffect(() => {
+    const storedToken = JSON.parse(localStorage.getItem('token') || '');
+    const storedUsername = localStorage.getItem('username');
+    if (storedToken && storedUsername) {
+      setUser({ token: storedToken, username: storedUsername, loggedIn: true });
+    }
+  }, [setUser]);
+  
   return (
     <nav className="nav">
       <Link to="/" className="site-title">

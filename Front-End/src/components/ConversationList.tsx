@@ -16,26 +16,41 @@ const ConversationList: React.FC = () => {
   const base_api_url = import.meta.env.VITE_APP_BASE_API;
 
   useEffect(() => {
-    const fetchConversations = async () => {
-      const res = await fetch(`${base_api_url}/conversations`, {
-        method: 'GET',
-        headers: {
-          'x-access-token': `bearer ${user.token}`
-        }
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setConversationsArray(data);
-      }
-    };
-
     fetchConversations();
   }, []);
 
-  const handleButtonClick = (url: string, id: string) => {
-    console.log(id)
-    navigate(`${url}?conversation_id=${id}`);
+  const fetchConversations = async () => {
+    const res = await fetch(`${base_api_url}/conversations`, {
+      method: 'GET',
+      headers: {
+        'x-access-token': `bearer ${user.token || JSON.parse(localStorage.getItem('token') || '')}`,
+      },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setConversationsArray(data);
+    }
+  };
+
+  const createConversation = async () => {
+    const res = await fetch(`${base_api_url}/conversation`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': `bearer ${user.token || JSON.parse(localStorage.getItem('token') || '')}`,
+      },
+      body: JSON.stringify({
+        name: 'New Conversation', // Change the name as desired
+        url: '/housechat',
+      }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const conversationId = data.conversation_id;
+      navigate(`/housechat?conversation_id=${conversationId}`);
+    }
   };
 
   // Sort conversations by timestamp in ascending order
@@ -44,17 +59,18 @@ const ConversationList: React.FC = () => {
   );
 
   return (
-    <div>
+    <div className="conversation-list">
+      <button className="new-conversation" onClick={createConversation}>Create New Conversation</button>
       {sortedConversations.map((conversation: Conversation) => (
         <button
           key={conversation.id}
-          onClick={() => handleButtonClick(conversation.url, conversation.id)}
+          onClick={() => navigate(`${conversation.url}?conversation_id=${conversation.id}`)}
         >
           {conversation.name}
         </button>
       ))}
     </div>
   );
-};
+}
 
 export default ConversationList;
