@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../contexts/UserProvider';
 
 interface Message {
@@ -18,9 +18,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   const base_api_url = import.meta.env.VITE_APP_BASE_API;
   const aiApiUrl = 'https://api.openai.com/v1/chat/completions';
 
+  const chatWindowRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetchMessages();
   }, [conversationId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const fetchMessages = async () => {
     const res = await fetch(`${base_api_url}/messages/${conversationId}`, {
@@ -73,18 +79,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
       return;
     }
 
+    sendMessage(inputValue, 'user');
+    setInputValue('');
     const lastThreeMessages = messages
       .slice(-3)
       .map((message) => ({
         role: 'user',
-        content: message.body || '', // Set content to an empty string if body is undefined or null
+        content: message.body || '',
       }));
 
     const aiRes = await fetch(aiApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer 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`,
+        Authorization: `Bearer `,
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
@@ -92,13 +100,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
           {
             role: 'system',
             content:
-              "you are House from the show House MD, known for your wit and sarcasm. You are consulting a fellow doctor about a challenging medical case. Keep your replies short",
+              "You are House from the show House MD. We are texting about a patient from the other day. You are especially irritated today. House is known for his quick wit and sarcastic demeanor. Never respond in a kind way",
           },
           ...lastThreeMessages,
           { role: 'user', content: inputValue },
           { role: 'assistant', content: '' },
         ],
-        temperature: 1,
+        temperature: 0.5,
       }),
     });
 
@@ -106,14 +114,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
       const aiData = await aiRes.json();
       const aiResponse = aiData.choices[0].message.content;
 
-      // Save user message
-      await sendMessage(inputValue, 'user');
-
-      // Save AI response
       await sendMessage(aiResponse, 'ai');
     }
 
     setInputValue('');
+  };
+
+  const scrollToBottom = () => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
   };
 
   const sortedMessages = [...messages].sort((a, b) => {
@@ -122,7 +132,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
 
   return (
     <div className="window-box">
-      <div className="chat-window">
+      <div className="chat-window" ref={chatWindowRef}>
         {sortedMessages.map((message, index) => (
           <div
             key={index}
@@ -146,3 +156,4 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
 };
 
 export default ChatWindow;
+

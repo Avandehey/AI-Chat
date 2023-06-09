@@ -25,12 +25,13 @@ const Navbar: React.FC = () => {
   const { user, setUser } = useContext(AuthContext);
 
   useEffect(() => {
-    const storedToken = JSON.parse(localStorage.getItem('token') || '');
+    const storedToken = localStorage.getItem('token');
     const storedUsername = localStorage.getItem('username');
     if (storedToken && storedUsername) {
       setUser({ token: storedToken, username: storedUsername, loggedIn: true });
     }
   }, [setUser]);
+  
   
   return (
     <nav className="nav">
